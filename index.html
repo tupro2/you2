@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GLOBE Downloader</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>GLOBE Downloader</h1>
+    <select id="language">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+    </select>
+    <input type="text" id="videoUrl" placeholder="Pega el enlace de YouTube aquí" />
+    <button onclick="downloadVideo()">Descargar</button>
+    <p id="result"></p>
+  </div>
+  <script>
+    function downloadVideo() {
+      const url = document.getElementById("videoUrl").value;
+      const format = 'video';
+
+      fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, format })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Error');
+        return res.blob();
+      })
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'video.mp4';
+        link.click();
+      })
+      .catch(err => {
+        document.getElementById("result").innerText = "Error: " + err.message;
+      });
+    }
+  </script>
+</body>
+</html>
